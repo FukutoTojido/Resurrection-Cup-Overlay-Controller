@@ -33,6 +33,7 @@ const createWindow = () => {
     const win = new BrowserWindow({
         width: 1280,
         height: 960,
+        icon: "./src/assets/OverlayIco.ico"
     });
 
     win.removeMenu();

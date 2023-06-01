@@ -4,6 +4,8 @@
     "version": "0.0.0",
     "main": "main.js",
     "homepage": "./",
+    "author": "FukutoTojido",
+    "description": "Overlay Controller for Resurrection Cup Mappool Overlay using Electron + React",
     "scripts": {
         "start": "vite",
         "build": "vite build",
