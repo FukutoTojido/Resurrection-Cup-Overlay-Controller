@@ -1,5 +1,7 @@
 module.exports = {
-  packagerConfig: {},
+  packagerConfig: {
+    icon: './src/assets/OverlayIco.ico'
+  },
   rebuildConfig: {},
   makers: [
     {
