@@ -1,5 +1,5 @@
 // include the Node.js 'path' module at the top of your file
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const isDev = require("electron-is-dev");
@@ -33,7 +33,11 @@ const createWindow = () => {
     const win = new BrowserWindow({
         width: 1280,
         height: 960,
-        icon: "./src/assets/OverlayIco.ico"
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        },
+        icon: "./src/assets/OverlayIco.ico",
     });
 
     win.removeMenu();
@@ -55,4 +59,9 @@ app.whenReady().then(() => {
 
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") app.quit();
+});
+
+// Event handler for asynchronous incoming messages
+ipcMain.on("openFolder", (event, arg) => {
+    shell.openPath(app.getPath("userData"));
 });

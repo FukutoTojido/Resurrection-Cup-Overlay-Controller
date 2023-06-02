@@ -1,5 +1,6 @@
 import { useState, createContext, useEffect, useRef } from "react";
 import useWebSocket from "react-use-websocket";
+const app = window.require("electron");
 
 import "./App.css";
 
@@ -126,6 +127,11 @@ function App() {
         );
     }, [JSON.stringify(naviStatus)]);
 
+    const openConfig = () => {
+        // shell.openPath("C:\\");
+        app.ipcRenderer.send("openFolder");
+    };
+
     return (
         <ControllerDataContext.Provider
             value={
@@ -146,6 +152,9 @@ function App() {
             {isInit ? (
                 <>
                     <div className="title">Resurrection Cup - Streamer Dashboard</div>
+                    <button className="openConfig" onClick={openConfig}>
+                        Open config folder
+                    </button>
                     <div className="leftSection">
                         <OverlayNavigator />
                         <Notes />
