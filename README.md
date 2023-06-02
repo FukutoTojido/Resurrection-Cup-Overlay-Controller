@@ -3,6 +3,7 @@ Overlay Controller for Resurrection Cup Mappool Overlay using Electron + React
 
 ## Installation Guide
 - Download the latest release
+- Extract it somewhere other than `C:\`
 - Run `res-cup-controller-react.exe`
 - Run osu!, gosumemory, Resurrection Cup Overlay
 
