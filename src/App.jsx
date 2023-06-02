@@ -127,6 +127,19 @@ function App() {
         );
     }, [JSON.stringify(naviStatus)]);
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === "F12")
+                app.ipcRenderer.send("openDevTools");
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
     const openConfig = () => {
         // shell.openPath("C:\\");
         app.ipcRenderer.send("openFolder");

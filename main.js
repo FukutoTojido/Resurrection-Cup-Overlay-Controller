@@ -47,6 +47,10 @@ const createWindow = () => {
     if (isDev) {
         win.webContents.openDevTools({ mode: "detach" });
     }
+
+    ipcMain.on("openDevTools", (event, arg) => {
+        win.webContents.openDevTools({ mode: "detach" });
+    });
 };
 
 app.whenReady().then(() => {
