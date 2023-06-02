@@ -44,11 +44,11 @@ const createWindow = () => {
     win.loadURL(isDev ? `http://localhost:4727` : `file://${path.join(__dirname, "./dist/index.html")}`);
 
     // Open the DevTools.
-    // if (isDev) {
-    //     win.webContents.openDevTools({ mode: "detach" });
-    // }
-    
-    win.webContents.openDevTools({ mode: "detach" });
+    if (isDev) {
+        win.webContents.openDevTools({ mode: "detach" });
+    }
+
+    // win.webContents.openDevTools({ mode: "detach" });
 
     ipcMain.on("openDevTools", (event, arg) => {
         win.webContents.openDevTools({ mode: "detach" });
