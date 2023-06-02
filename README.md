@@ -7,10 +7,11 @@ Overlay Controller for Resurrection Cup Mappool Overlay using Electron + React
 - Run osu!, gosumemory, Resurrection Cup Overlay
 
 ## Edit config
-- `Win+R` then type `%appdata%`
-- Find a folder named `res-cup-controller-react`
-- Change `config.json` file as you wanted
-- > Note: The controller does not have hot reload, so you have to restart the controller for the changes to have effect!
+- There is a button in the app now lol
+~~- `Win+R` then type `%appdata%`~~
+~~- Find a folder named `res-cup-controller-react`~~
+~~- Change `config.json` file as you wanted~~
+~~- > Note: The controller does not have hot reload, so you have to restart the controller for the changes to have effect!~~
 
 ## Developing
 - Clone the repository by `git clone https://github.com/FukutoTojido/Resurrection-Cup-Overlay-Controller`
