@@ -8,7 +8,8 @@ Overlay Controller for Resurrection Cup Mappool Overlay using Electron + React
 - Run osu!, gosumemory, Resurrection Cup Overlay
 
 ## Edit config
-- There is a button in the app now lol
+- First, make sure you head to `%appdata%/res-cup-controller-react/config.json` and set the `location` property to your **Resurrection Cup Overlay folder** location
+- Edit the config at `<your_gosumemory_path>/static/ResCupOverlay/config.json`
 - ~~`Win+R` then type `%appdata%`~~
 - ~~Find a folder named `res-cup-controller-react`~~
 - ~~Change `config.json` file as you wanted~~
