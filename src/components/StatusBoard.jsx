@@ -93,7 +93,8 @@ const Row = (props) => {
 
     useEffect(() => {
         setSelectedMap(controllerData.poolStatus[props.pos][props.type.toLowerCase()][props.idx]);
-    }, [controllerData.poolStatus[props.pos][props.type.toLowerCase()][props.idx]]);
+        setWinner(controllerData.poolStatus[props.pos][props.type.toLowerCase()][props.idx].winner)
+    }, [JSON.stringify(controllerData.poolStatus[props.pos][props.type.toLowerCase()][props.idx])]);
 
     useEffect(() => {
         // console.log(props.pos, props.type, props.idx, isClicked);
@@ -139,7 +140,7 @@ const Col = (props) => {
             {[...Array(controllerData.mappoolData.nBans).keys()].map((idx) => (
                 <Row pos={props.pos} idx={idx} type="BAN" key={idx} />
             ))}
-            {[...Array((controllerData.mappoolData.bestOf - 1) / 2).keys()].map((idx) => (
+            {[...Array(Math.ceil((controllerData.mappoolData.bestOf - 1) / 2)).keys()].map((idx) => (
                 <Row pos={props.pos} idx={idx} type="PICK" key={idx} />
             ))}
         </div>

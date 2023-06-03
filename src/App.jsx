@@ -51,7 +51,7 @@ function App() {
                             ban: [...Array(mes.data.nBans).keys()].map((n) => {
                                 return {};
                             }),
-                            pick: [...Array((mes.data.bestOf - 1) / 2).keys()].map((n) => {
+                            pick: [...Array(Math.ceil((mes.data.bestOf - 1) / 2)).keys()].map((n) => {
                                 return {};
                             }),
                         },
@@ -59,7 +59,7 @@ function App() {
                             ban: [...Array(mes.data.nBans).keys()].map((n) => {
                                 return {};
                             }),
-                            pick: [...Array((mes.data.bestOf - 1) / 2).keys()].map((n) => {
+                            pick: [...Array(Math.ceil((mes.data.bestOf - 1) / 2)).keys()].map((n) => {
                                 return {};
                             }),
                         },
@@ -87,6 +87,79 @@ function App() {
                         false
                     );
                     break;
+                case "updateJson":
+                    setMappoolData(mes.data);
+                    setPoolStatus({
+                        left: {
+                            ban: [...Array(mes.data.nBans).keys()].map((n) => {
+                                if (!poolStatus.left.ban[n]) return {};
+                                if (JSON.stringify(poolStatus.left.ban[n]) !== "{}") {
+                                    const mod = poolStatus.left.ban[n].mapIndex.slice(0, 2);
+                                    const idx = poolStatus.left.ban[n].mapIndex.at(-1);
+
+                                    return {
+                                        ...poolStatus.left.ban[n],
+                                        beatmapData: mes.data.pool[mod][idx - 1],
+                                    };
+                                }
+                                return {};
+                            }),
+                            pick: [...Array(Math.ceil((mes.data.bestOf - 1) / 2)).keys()].map((n) => {
+                                if (!poolStatus.left.pick[n]) return {};
+                                if (JSON.stringify(poolStatus.left.pick[n]) !== "{}") {
+                                    const mod = poolStatus.left.pick[n].mapIndex.slice(0, 2);
+                                    const idx = poolStatus.left.pick[n].mapIndex.at(-1);
+
+                                    return {
+                                        ...poolStatus.left.pick[n],
+                                        beatmapData: mes.data.pool[mod][idx - 1],
+                                    };
+                                }
+                                return {};
+                            }),
+                        },
+                        right: {
+                            ban: [...Array(mes.data.nBans).keys()].map((n) => {
+                                if (!poolStatus.right.ban[n]) return {};
+                                if (JSON.stringify(poolStatus.right.ban[n]) !== "{}") {
+                                    const mod = poolStatus.right.ban[n].mapIndex.slice(0, 2);
+                                    const idx = poolStatus.right.ban[n].mapIndex.at(-1);
+
+                                    return {
+                                        ...poolStatus.right.ban[n],
+                                        beatmapData: mes.data.pool[mod][idx - 1],
+                                    };
+                                }
+                                return {};
+                            }),
+                            pick: [...Array(Math.ceil((mes.data.bestOf - 1) / 2)).keys()].map((n) => {
+                                if (!poolStatus.right.pick[n]) return {};
+                                if (JSON.stringify(poolStatus.right.pick[n]) !== "{}") {
+                                    const mod = poolStatus.right.pick[n].mapIndex.slice(0, 2);
+                                    const idx = poolStatus.right.pick[n].mapIndex.at(-1);
+
+                                    return {
+                                        ...poolStatus.right.pick[n],
+                                        beatmapData: mes.data.pool[mod][idx - 1],
+                                    };
+                                }
+                                return {};
+                            }),
+                        },
+                        tb: poolStatus.tb,
+                    });
+                    setNaviStatus({
+                        phase: "Banning Phase",
+                        team: "left",
+                        pos: 0,
+                    });
+                    break;
+                case "setWinner":
+                    if (naviStatus.phase !== "Picking...") break;
+                    const temp = { ...poolStatus };
+                    temp[naviStatus.team].pick[naviStatus.pos - 1].winner = mes.data.winner;
+                    setPoolStatus(temp);
+                    break;
             }
         },
         onClose: () => {
@@ -98,7 +171,9 @@ function App() {
     });
 
     useEffect(() => {
-        if (connectStatus) ws.sendJsonMessage({ type: "initController" }, false);
+        if (connectStatus) {
+            ws.sendJsonMessage({ type: "initController" }, false);
+        }
     }, [connectStatus]);
 
     // useEffect(() => {
@@ -129,8 +204,7 @@ function App() {
 
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (e.key === "F12")
-                app.ipcRenderer.send("openDevTools");
+            if (e.key === "F12") app.ipcRenderer.send("openDevTools");
         };
 
         document.addEventListener("keydown", handleKeyDown);

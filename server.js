@@ -6,7 +6,8 @@ const http = require("http");
 const elecApp = require("electron").app;
 const fs = require("fs");
 
-const initialJson = JSON.parse(fs.readFileSync(`${elecApp.getPath("userData")}/config.json`, "utf-8"));
+const location = JSON.parse(fs.readFileSync(`${elecApp.getPath("userData")}/config.json`, "utf-8")).location;
+let initialJson = JSON.parse(fs.readFileSync(`${location}\\config.json`, "utf-8"));
 
 let app = express();
 let port = 3727;
@@ -15,6 +16,24 @@ let server = http.createServer(app).listen(port);
 // Apply expressWs
 const wss = expressWs(app, server);
 let confirmInit = false;
+
+const updateJson = () => {
+    const json = JSON.parse(fs.readFileSync(`${location}\\config.json`, "utf-8"));
+    if (JSON.stringify(initialJson) !== JSON.stringify(json)) {
+        initialJson = json;
+        wss.getWss().clients.forEach((client) => {
+            const retMes = JSON.stringify({
+                type: "updateJson",
+                data: json
+            })
+
+            client.send(retMes)
+        })
+    }
+};
+
+setInterval(updateJson, 1000);
+
 
 // This lets the server pick up the '/ws' WebSocket route
 app.ws("/ws", async function (ws, req) {
@@ -100,6 +119,16 @@ app.ws("/ws", async function (ws, req) {
                 wss.getWss().clients.forEach((client) => {
                     const retMes = JSON.stringify({
                         type: "fetchData",
+                    });
+
+                    client.send(retMes);
+                });
+                break;
+            case "setWinner":
+                wss.getWss().clients.forEach((client) => {
+                    const retMes = JSON.stringify({
+                        type: "setWinner",
+                        data: mes.data,
                     });
 
                     client.send(retMes);
