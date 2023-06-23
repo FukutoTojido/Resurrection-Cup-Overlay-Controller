@@ -8,6 +8,7 @@ import OverlayNavigator from "./components/CurrentPosition";
 import Maplist from "./components/Maplist";
 import StatusBoard from "./components/StatusBoard";
 import Notes from "./components/Notes";
+import TeamSelector from "./components/TeamSelector";
 
 const WS_URL = "ws://localhost:3727/ws";
 const ControllerDataContext = createContext();
@@ -17,6 +18,12 @@ function App() {
     const [isInit, setIsInit] = useState(false);
     const [bestOf, setBestOf] = useState(3);
     const [nBans, setNBans] = useState(1);
+    const [teamLeft, setTeamLeft] = useState(-1);
+    const [teamRight, setTeamRight] = useState(-1);
+    const [showTeamSelector, setShowTeamSelector] = useState({
+        show: false,
+        forTeam: "",
+    });
     const [mappoolData, setMappoolData] = useState({});
     const [poolStatus, setPoolStatus] = useState({});
     const [naviStatus, setNaviStatus] = useState({
@@ -101,6 +108,7 @@ function App() {
                     );
                     break;
                 case "updateJson":
+                    console.log("alo");
                     setMappoolData(mes.data);
                     setPoolStatus({
                         left: {
@@ -314,7 +322,13 @@ function App() {
                           setNaviStatus,
                           bestOf,
                           nBans,
-                          setNBans
+                          setNBans,
+                          showTeamSelector,
+                          setShowTeamSelector,
+                          teamLeft,
+                          setTeamLeft,
+                          teamRight,
+                          setTeamRight
                       }
                     : null
             }
@@ -331,6 +345,7 @@ function App() {
                     </div>
                     <Maplist />
                     <StatusBoard />
+                    {showTeamSelector.show ? <TeamSelector /> : ""}
                 </>
             ) : (
                 ""

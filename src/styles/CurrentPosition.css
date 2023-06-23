@@ -58,3 +58,14 @@
 
     padding: 5px;
 }
+
+.currentPosition input:focus {
+    outline: solid 2px #888;
+}
+
+.currentPosition .input button {
+    flex: 1;
+    padding: 5px 15px;
+    border-radius: 10px;
+    font-family: Manrope;
+}
