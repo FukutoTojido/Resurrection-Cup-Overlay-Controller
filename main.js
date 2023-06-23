@@ -14,16 +14,7 @@ if (!fs.existsSync(`${app.getPath("userData")}/config.json`))
     fs.writeFileSync(
         `${app.getPath("userData")}/config.json`,
         JSON.stringify({
-            bestOf: 9,
-            nBans: 1,
-            pool: {
-                NM: [],
-                HD: [],
-                HR: [],
-                DT: [],
-                FM: [],
-                TB: [],
-            },
+            location: "",
         })
     );
 
