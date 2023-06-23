@@ -15,6 +15,8 @@ const ControllerDataContext = createContext();
 function App() {
     const [connectStatus, setConnectStatus] = useState(false);
     const [isInit, setIsInit] = useState(false);
+    const [bestOf, setBestOf] = useState(3);
+    const [nBans, setNBans] = useState(1);
     const [mappoolData, setMappoolData] = useState({});
     const [poolStatus, setPoolStatus] = useState({});
     const [naviStatus, setNaviStatus] = useState({
@@ -24,6 +26,17 @@ function App() {
     });
 
     const [selected, setSelected] = useState({});
+
+    const gosuWS = useWebSocket("ws://127.0.0.1:24050/ws", {
+        onOpen: () => {
+            console.log("gosumemory connected");
+        },
+        onMessage: (event) => {
+            const data = JSON.parse(event.data);
+            if (data.tourney.manager.bestOF !== bestOf) setBestOf(data.tourney.manager.bestOF < 3 ? 3 : data.tourney.manager.bestOF);
+        },
+        shouldReconnect: (closeEvent) => true,
+    });
 
     let ws = useWebSocket(WS_URL, {
         onOpen: () => {
@@ -48,18 +61,18 @@ function App() {
 
                     setPoolStatus({
                         left: {
-                            ban: [...Array(mes.data.nBans).keys()].map((n) => {
+                            ban: [...Array(nBans).keys()].map((n) => {
                                 return {};
                             }),
-                            pick: [...Array(Math.ceil((mes.data.bestOf - 1) / 2)).keys()].map((n) => {
+                            pick: [...Array(Math.ceil((bestOf - 1) / 2)).keys()].map((n) => {
                                 return {};
                             }),
                         },
                         right: {
-                            ban: [...Array(mes.data.nBans).keys()].map((n) => {
+                            ban: [...Array(nBans).keys()].map((n) => {
                                 return {};
                             }),
-                            pick: [...Array(Math.ceil((mes.data.bestOf - 1) / 2)).keys()].map((n) => {
+                            pick: [...Array(Math.ceil((bestOf - 1) / 2)).keys()].map((n) => {
                                 return {};
                             }),
                         },
@@ -76,8 +89,8 @@ function App() {
                         {
                             type: "setOverlay",
                             data: {
-                                bestOf: mappoolData.bestOf,
-                                nBans: mappoolData.nBans,
+                                bestOf: bestOf,
+                                nBans: nBans,
                                 status: {
                                     poolStatus,
                                     naviStatus,
@@ -91,7 +104,7 @@ function App() {
                     setMappoolData(mes.data);
                     setPoolStatus({
                         left: {
-                            ban: [...Array(mes.data.nBans).keys()].map((n) => {
+                            ban: [...Array(nBans).keys()].map((n) => {
                                 if (!poolStatus.left.ban[n]) return {};
                                 if (JSON.stringify(poolStatus.left.ban[n]) !== "{}") {
                                     const mod = poolStatus.left.ban[n].mapIndex.slice(0, 2);
@@ -104,7 +117,7 @@ function App() {
                                 }
                                 return {};
                             }),
-                            pick: [...Array(Math.ceil((mes.data.bestOf - 1) / 2)).keys()].map((n) => {
+                            pick: [...Array(Math.ceil((bestOf - 1) / 2)).keys()].map((n) => {
                                 if (!poolStatus.left.pick[n]) return {};
                                 if (JSON.stringify(poolStatus.left.pick[n]) !== "{}") {
                                     const mod = poolStatus.left.pick[n].mapIndex.slice(0, 2);
@@ -119,7 +132,7 @@ function App() {
                             }),
                         },
                         right: {
-                            ban: [...Array(mes.data.nBans).keys()].map((n) => {
+                            ban: [...Array(nBans).keys()].map((n) => {
                                 if (!poolStatus.right.ban[n]) return {};
                                 if (JSON.stringify(poolStatus.right.ban[n]) !== "{}") {
                                     const mod = poolStatus.right.ban[n].mapIndex.slice(0, 2);
@@ -132,7 +145,7 @@ function App() {
                                 }
                                 return {};
                             }),
-                            pick: [...Array(Math.ceil((mes.data.bestOf - 1) / 2)).keys()].map((n) => {
+                            pick: [...Array(Math.ceil((bestOf - 1) / 2)).keys()].map((n) => {
                                 if (!poolStatus.right.pick[n]) return {};
                                 if (JSON.stringify(poolStatus.right.pick[n]) !== "{}") {
                                     const mod = poolStatus.right.pick[n].mapIndex.slice(0, 2);
@@ -175,6 +188,73 @@ function App() {
             ws.sendJsonMessage({ type: "initController" }, false);
         }
     }, [connectStatus]);
+
+    useEffect(() => {
+        setPoolStatus({
+            left: {
+                ban: [...Array(nBans).keys()].map((n) => {
+                    if (!poolStatus.left?.ban[n]) return {};
+                    if (JSON.stringify(poolStatus?.left.ban[n]) !== "{}") {
+                        const mod = poolStatus.left?.ban[n].mapIndex.slice(0, 2);
+                        const idx = poolStatus.left?.ban[n].mapIndex.at(-1);
+
+                        return {
+                            ...poolStatus.left?.ban[n],
+                            beatmapData: mappoolData.pool[mod][idx - 1],
+                        };
+                    }
+                    return {};
+                }),
+                pick: [...Array(Math.ceil((bestOf - 1) / 2)).keys()].map((n) => {
+                    if (!poolStatus.left?.pick[n]) return {};
+                    if (JSON.stringify(poolStatus.left?.pick[n]) !== "{}") {
+                        const mod = poolStatus.left?.pick[n].mapIndex.slice(0, 2);
+                        const idx = poolStatus.left?.pick[n].mapIndex.at(-1);
+
+                        return {
+                            ...poolStatus.left?.pick[n],
+                            beatmapData: mappoolData.pool[mod][idx - 1],
+                        };
+                    }
+                    return {};
+                }),
+            },
+            right: {
+                ban: [...Array(nBans).keys()].map((n) => {
+                    if (!poolStatus.right?.ban[n]) return {};
+                    if (JSON.stringify(poolStatus.right?.ban[n]) !== "{}") {
+                        const mod = poolStatus.right?.ban[n].mapIndex.slice(0, 2);
+                        const idx = poolStatus.right?.ban[n].mapIndex.at(-1);
+
+                        return {
+                            ...poolStatus.right?.ban[n],
+                            beatmapData: mappoolData.pool[mod][idx - 1],
+                        };
+                    }
+                    return {};
+                }),
+                pick: [...Array(Math.ceil((bestOf - 1) / 2)).keys()].map((n) => {
+                    if (!poolStatus.right?.pick[n]) return {};
+                    if (JSON.stringify(poolStatus.right.pick[n]) !== "{}") {
+                        const mod = poolStatus.right?.pick[n].mapIndex.slice(0, 2);
+                        const idx = poolStatus.right?.pick[n].mapIndex.at(-1);
+
+                        return {
+                            ...poolStatus.right?.pick[n],
+                            beatmapData: mappoolData.pool[mod][idx - 1],
+                        };
+                    }
+                    return {};
+                }),
+            },
+            tb: poolStatus.tb,
+        });
+        setNaviStatus({
+            phase: "Banning Phase",
+            team: "left",
+            pos: 0,
+        });
+    }, [bestOf, nBans]);
 
     // useEffect(() => {
     //     console.log(selected);
@@ -232,6 +312,9 @@ function App() {
                           setSelected,
                           naviStatus,
                           setNaviStatus,
+                          bestOf,
+                          nBans,
+                          setNBans
                       }
                     : null
             }

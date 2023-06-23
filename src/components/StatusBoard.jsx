@@ -92,8 +92,10 @@ const Row = (props) => {
     }, []);
 
     useEffect(() => {
-        setSelectedMap(controllerData.poolStatus[props.pos][props.type.toLowerCase()][props.idx]);
-        setWinner(controllerData.poolStatus[props.pos][props.type.toLowerCase()][props.idx].winner)
+        if (JSON.stringify(controllerData.poolStatus[props.pos][props.type.toLowerCase()][props.idx] ?? {}) !== "{}") {
+            setSelectedMap(controllerData.poolStatus[props.pos][props.type.toLowerCase()][props.idx]);
+            setWinner(controllerData.poolStatus[props.pos][props.type.toLowerCase()][props.idx].winner);
+        }
     }, [JSON.stringify(controllerData.poolStatus[props.pos][props.type.toLowerCase()][props.idx])]);
 
     useEffect(() => {
@@ -137,10 +139,10 @@ const Col = (props) => {
 
     return (
         <div className={`previewCol ${props.pos}`}>
-            {[...Array(controllerData.mappoolData.nBans).keys()].map((idx) => (
+            {[...Array(controllerData.nBans).keys()].map((idx) => (
                 <Row pos={props.pos} idx={idx} type="BAN" key={idx} />
             ))}
-            {[...Array(Math.ceil((controllerData.mappoolData.bestOf - 1) / 2)).keys()].map((idx) => (
+            {[...Array(Math.ceil((controllerData.bestOf - 1) / 2)).keys()].map((idx) => (
                 <Row pos={props.pos} idx={idx} type="PICK" key={idx} />
             ))}
         </div>
