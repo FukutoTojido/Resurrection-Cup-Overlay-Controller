@@ -24,9 +24,11 @@ const Row = (props) => {
     const handleRightClick = (e) => {
         e.preventDefault();
         if (rowRef.current && rowRef.current.contains(e.target)) {
+            // console.log("Hello!");
             const temp = { ...controllerData.poolStatus };
             temp[props.pos][props.type.toLowerCase()][props.idx] = {};
             controllerData.setPoolStatus(temp);
+            setSelectedMap({})
             setWinner("none");
         }
     };
