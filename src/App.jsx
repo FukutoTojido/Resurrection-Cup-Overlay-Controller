@@ -21,6 +21,7 @@ function App() {
     const [teamLeft, setTeamLeft] = useState(-1);
     const [teamRight, setTeamRight] = useState(-1);
     const [roundName, setRoundName] = useState("");
+    const [mapId, setMapId] = useState(-1);
     const [showTeamSelector, setShowTeamSelector] = useState({
         show: false,
         forTeam: "",
@@ -42,6 +43,38 @@ function App() {
         onMessage: (event) => {
             const data = JSON.parse(event.data);
             if (data.tourney.manager.bestOF !== bestOf) setBestOf(data.tourney.manager.bestOF < 3 ? 3 : data.tourney.manager.bestOF);
+            if (data.menu.bm.id !== mapId) {
+                setMapId(data.menu.bm.id);
+
+                let matchedMap = null;
+
+                for (const mod in mappoolData.pool) {
+                    mappoolData.pool[mod].forEach((map, idx) => {
+                        if (map.id === data.menu.bm.id)
+                            matchedMap = {
+                                mod,
+                                idx,
+                                map,
+                            };
+                    });
+                }
+
+                if (JSON.stringify(selected) !== "{}" && matchedMap) {
+                    const { pos, type, idx } = selected;
+                    const temp = { ...poolStatus };
+
+                    if (JSON.stringify(temp[pos][type][idx]) === "{}") {
+                        temp[pos][type][idx] = {
+                            mapIndex: `${matchedMap.mod}${matchedMap.idx + 1}`,
+                            beatmapData: matchedMap.map,
+                            winner: "none",
+                        };
+
+                        setPoolStatus(temp);
+                        setSelected({});
+                    }
+                }
+            }
         },
         shouldReconnect: (closeEvent) => true,
     });

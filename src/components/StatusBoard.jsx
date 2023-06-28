@@ -48,7 +48,7 @@ const Row = (props) => {
                 team: props.pos,
                 pos:
                     props.pos === "tb"
-                        ? Math.ceil((controllerData.mappoolData.bestOf + 1) / 2) - 1
+                        ? Math.ceil((controllerData.bestOf + 1) / 2) - 1
                         : props.type.toLowerCase() === "ban"
                         ? 0
                         : props.type.toLowerCase() === "pick"
