@@ -24,16 +24,15 @@ const updateJson = () => {
         wss.getWss().clients.forEach((client) => {
             const retMes = JSON.stringify({
                 type: "updateJson",
-                data: json
-            })
+                data: json,
+            });
 
-            client.send(retMes)
-        })
+            client.send(retMes);
+        });
     }
 };
 
 setInterval(updateJson, 1000);
-
 
 // This lets the server pick up the '/ws' WebSocket route
 app.ws("/ws", async function (ws, req) {
@@ -129,6 +128,34 @@ app.ws("/ws", async function (ws, req) {
                     const retMes = JSON.stringify({
                         type: "setWinner",
                         data: mes.data,
+                    });
+
+                    client.send(retMes);
+                });
+                break;
+            case "fetchInitRoundData":
+                wss.getWss().clients.forEach((client) => {
+                    const retMes = JSON.stringify({
+                        type: "fetchInitRoundData",
+                    });
+
+                    client.send(retMes);
+                });
+                break;
+            case "setInitialData":
+                wss.getWss().clients.forEach((client) => {
+                    const retMes = JSON.stringify({
+                        type: "setInitialData",
+                        data: mes.data,
+                    });
+
+                    client.send(retMes);
+                });
+                break;
+            case "nextPick":
+                wss.getWss().clients.forEach((client) => {
+                    const retMes = JSON.stringify({
+                        type: "nextPick",
                     });
 
                     client.send(retMes);

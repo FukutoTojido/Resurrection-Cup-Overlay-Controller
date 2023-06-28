@@ -9,16 +9,28 @@ const Input = (props) => {
     return (
         <div className="row input">
             <div className="label">Team {props.pos}</div>
-            <button onClick={() => {
-                controllerData.setShowTeamSelector({
-                    show: true,
-                    forTeam: props.pos
-                })
-            }}>
+            <button
+                onClick={() => {
+                    controllerData.setShowTeamSelector({
+                        show: true,
+                        forTeam: props.pos,
+                    });
+                }}
+            >
                 {controllerData[`team${props.pos}`] === -1
                     ? "Select Team"
                     : controllerData.mappoolData.teamList[controllerData[`team${props.pos}`]].teamName}
             </button>
+        </div>
+    );
+};
+
+const TextInput = (props) => {
+    const controllerData = useContext(ControllerDataContext);
+    return (
+        <div className="row input">
+            <div className="label">Round Name</div>
+            <input type="text" onBlur={(e) => controllerData.setRoundName(e.target.value)}/>
         </div>
     );
 };
@@ -44,7 +56,7 @@ const Bans = (props) => {
                 break;
             case "dec":
                 controllerData.setNBans(Math.max(0, currentNBans - 1));
-                if (inputRef) inputRef.current.value = Math.max(currentPos - 1);
+                if (inputRef) inputRef.current.value = Math.max(currentNBans - 1);
                 break;
             case "val":
                 controllerData.setNBans(Math.max(0, currentVal));
@@ -79,6 +91,7 @@ const OverlayNavigator = (props) => {
     return (
         <div className="container currentPosition">
             <div className="content">
+                <TextInput />
                 <Input pos="Left" />
                 <Input pos="Right" />
                 <Bans />

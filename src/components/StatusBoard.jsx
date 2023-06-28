@@ -82,6 +82,18 @@ const Row = (props) => {
     };
 
     useEffect(() => {
+        if (
+            controllerData.selected.pos === props.pos &&
+            controllerData.selected.type === props.type.toLowerCase() &&
+            controllerData.selected.idx === props.idx
+        ) {
+            setIsClicked(true);
+        } else {
+            setIsClicked(false);
+        }
+    }, [JSON.stringify(controllerData.selected)]);
+
+    useEffect(() => {
         document.addEventListener("click", handleClick);
         document.addEventListener("contextmenu", handleRightClick);
 

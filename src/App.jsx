@@ -20,6 +20,7 @@ function App() {
     const [nBans, setNBans] = useState(1);
     const [teamLeft, setTeamLeft] = useState(-1);
     const [teamRight, setTeamRight] = useState(-1);
+    const [roundName, setRoundName] = useState("");
     const [showTeamSelector, setShowTeamSelector] = useState({
         show: false,
         forTeam: "",
@@ -181,6 +182,41 @@ function App() {
                     temp[naviStatus.team].pick[naviStatus.pos - 1].winner = mes.data.winner;
                     setPoolStatus(temp);
                     break;
+                case "fetchInitRoundData":
+                    ws.sendJsonMessage({
+                        type: "setInitialData",
+                        data: {
+                            left: teamLeft,
+                            right: teamRight,
+                            name: roundName,
+                        },
+                    });
+                    break;
+                case "nextPick":
+                    if (naviStatus.team === "tb") break;
+                    const tempNavi = { ...naviStatus };
+
+                    if (
+                        JSON.stringify(poolStatus[naviStatus.team === "left" ? "right" : "left"].pick[naviStatus.pos - 1]) !== "{}" &&
+                        naviStatus.pos < (bestOf - 1) / 2
+                    )
+                        tempNavi.pos++;
+
+                    if (
+                        JSON.stringify(poolStatus.left.pick[naviStatus.pos - 1]) !== "{}" &&
+                        JSON.stringify(poolStatus.right.pick[naviStatus.pos - 1]) !== "{}" &&
+                        naviStatus.pos === (bestOf - 1) / 2
+                    ) {
+                        tempNavi.team = "tb";
+                    } else tempNavi.team = tempNavi.team === "left" ? "right" : "left";
+
+                    setNaviStatus(tempNavi);
+                    setSelected({
+                        pos: tempNavi.team,
+                        type: "pick",
+                        idx: tempNavi.team === "tb" ? 0 : tempNavi.pos - 1,
+                    });
+                    break;
             }
         },
         onClose: () => {
@@ -291,6 +327,17 @@ function App() {
     }, [JSON.stringify(naviStatus)]);
 
     useEffect(() => {
+        ws.sendJsonMessage({
+            type: "setInitialData",
+            data: {
+                left: teamLeft,
+                right: teamRight,
+                name: roundName,
+            },
+        });
+    }, [teamLeft, teamRight, roundName]);
+
+    useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === "F12") app.ipcRenderer.send("openDevTools");
         };
@@ -328,7 +375,9 @@ function App() {
                           teamLeft,
                           setTeamLeft,
                           teamRight,
-                          setTeamRight
+                          setTeamRight,
+                          roundName,
+                          setRoundName,
                       }
                     : null
             }
